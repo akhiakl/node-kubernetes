@@ -1,0 +1,38 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: node-web-service
+spec:
+  selector:
+    app: myapp
+  ports:
+    - protocol: "TCP"
+      # Port accessible inside cluster
+      port: 8081
+      # Port to forward to inside the pod
+      targetPort: 8080
+      # Port accessible outside cluster
+      nodePort: 30002
+  type: LoadBalancer
+
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: node-web-deployement
+spec:
+  selector:
+    matchLabels:
+      app: node-web-app
+  replicas: 5
+  template:
+    metadata:
+      labels:
+        app: node-web-app
+    spec:
+      containers:
+        - name: node-web-app
+          image: <username>/node-web-app
+          ports:
+            - containerPort: 8080
